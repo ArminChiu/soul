@@ -1,0 +1,24 @@
+#!/bin/bash
+
+export CUDA_VISIBLE_DEVICES=0
+
+CKPT=${CKPT:-YOUR_MODEL_PATH}
+MODEL=llava-vanilla-7b
+
+reduction_ratio=$1
+max_num_trunction=$2
+
+python -m llava.eval.model_vqa_loader \
+    --model-path $CKPT \
+    --question-file ./playground/data/eval/textvqa/llava_textvqa_val_v051_ocr.jsonl \
+    --image-folder ./playground/data/eval/textvqa/train_images \
+    --answers-file ./playground/data/eval/textvqa/answers/$MODEL.jsonl \
+    --temperature 0 \
+    --conv-mode vicuna_v1 \
+    --image_token_start_index 35 \
+    --image_token_length 576 \
+    --is_textvqa
+
+python -m llava.eval.eval_textvqa \
+    --annotation-file ./playground/data/eval/textvqa/TextVQA_0.5.1_val.json \
+    --result-file ./playground/data/eval/textvqa/answers/$MODEL.jsonl
